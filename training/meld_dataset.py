@@ -87,7 +87,8 @@ class  MELDDataset(Dataset):
             
             
             
-            
+    def _extract_audio_features(self, video_path):   
+        audio_path = video_path.replace('.mp4', '.wav')
             
             
             
@@ -96,7 +97,7 @@ class  MELDDataset(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        print(self.data.iloc[idx])
+        # print(self.data.iloc[idx])
         row = self.data.iloc[idx]
         
         video_filename = f"""dia{row['Dialogue_ID']}_utt{row['Utterance_ID']}.mp4"""
@@ -115,7 +116,7 @@ class  MELDDataset(Dataset):
         
         text_inputs = self.tokeninzer(row['Utterance'], return_tensors='pt', padding='max_length', truncation=True, max_length=128)
         
-        print(text_inputs)
+        # print(text_inputs)
         
         #load video frames
         video_frames = self._load_video_frames(path)
