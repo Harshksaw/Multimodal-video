@@ -5,6 +5,9 @@ from transformers import AutoTokenizer
 import numpy as np
 import cv2
 import torch
+import touchaudio
+
+
 class  MELDDataset(Dataset):
 
     
@@ -88,7 +91,55 @@ class  MELDDataset(Dataset):
             
             
     def _extract_audio_features(self, video_path):   
+# Generate the output audio file path by replacing the .mp4 extension with .wav
         audio_path = video_path.replace('.mp4', '.wav')
+
+        try:
+    # Use ffmpeg to extract audio from the video file
+    # -vn: Disable video processing
+    # -acodec pcm_s16le: Use PCM 16-bit little-endian codec
+    # -ac 1: Convert audio to mono
+    # -ar 16000: Set audio sample rate to 16,000 Hz
+    # Suppress ffmpeg output and errors using subprocess.DEVNULL
+        subprocess.run(['ffmpeg', '-i', video_path, '-vn', '-acodec', 'pcm_s16le', '-ac', '1', '-ar', '16000', audio_path], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+    # Raise an error if audio extraction fails
+     raise ValueError(f"Error extracting audio from {video_path}")
+ 
+ waveform, sample_rate = torchaudio.load()
+    if sample_rate != 16000:
+        resampler = torchaudio.transforms.Resample(sample_rate, 16000)
+        waveform = resampler(waveform)
+        
+    mel_spectogram = torchaudio.transforms.MelSpectorgram(
+        sample_rate = 16000,
+        n_mels= 64,
+        n_fft= 1024
+        hop_length= 512
+        
+        
+    )
+    mel_spec = mel_spectrogram(waveform)
+    
+    #Normalize 
+    mel_spec = (mel_spec - mel_spect.mean())/mel_spec.std()
+    
+    if mel_spec.size(2)< 300:
+        padding = 300 - mel_spec.size(2)
+        mel_spec = torch.nn.functional.pad(mel_spec, (0 ,padding))
+    else:
+        mel_spec = mel_spec[:,:,:300]
+        
+    except subprocessCalledProcessError as e:
+        raise ValueError(f"Audio extractio error":{str(e)})
+    except Exception as e:
+        raise ValueError(f"Audio Error:{str(e)}")
+    finally: 
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+            
+        
             
             
             
