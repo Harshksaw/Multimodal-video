@@ -1,3 +1,57 @@
 dataset/
 *.mp4
 *.tar.gz
+
+# Python packages for Flask and ML
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Model files
+*.h5
+*.pkl
+*.model
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.pb
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Dataset and media files
+dataset/
+*.mp4
+*.tar.gz
+
+# Environment variables
+.env
+.flaskenv
+
+# IDE
+.vscode/
+.idea/
